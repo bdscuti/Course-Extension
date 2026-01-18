@@ -1,23 +1,53 @@
 console.log("Course extension loaded!");
 
+let file = "";
 let COURSE_DB = {}; // Will be loaded asynchronously
+let isExtensionInitialized = false;
 
 
+// on start
+chrome.storage.sync.get(['selectedUniversity'], (result) => {
 
-let file = "courses_2026_spring.json";
-// Load the JSON file
-fetch(chrome.runtime.getURL(file))
-  .then(response => response.json())
-  .then(data => {
-    COURSE_DB = data;
-    console.log(`Loaded ${Object.keys(COURSE_DB).length} courses`);
-    initializeExtension(); // Start the extension after data is loaded
-  })
-  .catch(error => {
-    console.error("Failed to load courses.json:", error);
-    // Fallback to basic data
-    initializeExtension();
-  });
+  const uniCode = result.selectedUniversity ? result.selectedUniversity.code : 'uiuc'; 
+  console.log("Current University Code:", uniCode);
+
+  updateCourseDatabase(uniCode);
+});
+
+
+// on change
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "UPDATE_UNIVERSITY") {
+    const newUni = request.university;    
+    console.log("Switched to:", newUni.name);
+    // Re-run highligher with the new uni
+    updateCourseDatabase(newUni.code);
+  }
+});
+
+function updateCourseDatabase(uniCode) {
+  file = "course_jsons/" + uniCode.toLowerCase() + "_2026_sp.json";
+  
+
+  // Load the JSON file
+  fetch(chrome.runtime.getURL(file))
+    .then(response => response.json())
+    .then(data => {
+      COURSE_DB = data;
+      console.log(`Loaded ${Object.keys(COURSE_DB).length} courses`);
+      if (!isExtensionInitialized) {
+        initializeExtension();
+        isExtensionInitialized = true;
+      }
+    })
+    .catch(error => {
+      console.log(file);
+      console.error("Failed to load courses.json:", error);
+      // Fallback to basic data
+      console.log("Fallback data not implemented");
+    });
+}
+
 
 function initializeExtension() {
   // All your existing functions go here, unchanged
@@ -93,19 +123,21 @@ function initializeExtension() {
       const tooltip = createTooltip(courseData, true);
       document.body.appendChild(tooltip);
       positionTooltip(tooltip);
-    } else {
-      // Show "No Match" warning
-      const tooltip = createTooltip(null, false);
-      document.body.appendChild(tooltip);
-      positionTooltip(tooltip);
+    } 
+    
+    // else {
+    //   // Show "No Match" warning
+    //   const tooltip = createTooltip(null, false);
+    //   document.body.appendChild(tooltip);
+    //   positionTooltip(tooltip);
       
-      setTimeout(() => {
-        const existing = document.getElementById("course-tooltip");
-        if (existing && existing.innerText.includes("No course found")) {
-            existing.remove();
-        }
-      }, 1000);
-    }
+    //   setTimeout(() => {
+    //     const existing = document.getElementById("course-tooltip");
+    //     if (existing && existing.innerText.includes("No course found")) {
+    //         existing.remove();
+    //     }
+    //   }, 1000);
+    // }
   });
 
   document.addEventListener("mousedown", (e) => {

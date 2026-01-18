@@ -1,0 +1,58 @@
+/* Make the container slightly wider for the larger box */
+.container {
+  width: 350px;
+  padding: 15px;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#uni-input {
+  width: 100%;
+  padding: 12px 35px 12px 12px; /* Extra right padding for the X button */
+  font-size: 16px; /* Larger text */
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  outline: none;
+}
+
+#uni-input:focus {
+  border-color: #4A90E2;
+}
+
+/* Style for the X button */
+.clear-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  display: none; /* Hidden by default */
+  line-height: 1;
+}
+
+.clear-btn:hover {
+  color: #333;
+}
+
+#suggestions-list {
+  position: absolute;
+  top: 100%; /* Sits right below the input */
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}

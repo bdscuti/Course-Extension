@@ -1,9 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Course Extension",
-  "version": "1.0",
+  "version": "0.1",
   "permissions": ["storage"],
-  "action": {},
+  "action": {
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -12,7 +14,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["courses_2026_spring.json"],
+      "resources": ["course_jsons/*.json"],
       "matches": ["<all_urls>"]
     }
   ]
