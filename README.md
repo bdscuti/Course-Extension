@@ -13,7 +13,8 @@ To use
 
 This project aims to ameriolarate that. 
 First you select your university of interest by clicking on the extension icon. 
-Then, you highlight some text and a tooltip will pop up showing the course title and course website.
+Then, you highlight some text and a tooltip will pop up showing past semester offerings of the class with its title and webpage.
 This currently only supports UIUC classes but I hope to expand it to more universities using course catalog APIs and allow contributors to modify the database.
 Futhermore, I hope to add a second mode that scans and add course tooltips to all the matched courses on a page.
+
 
