@@ -11,10 +11,20 @@ To use
 5) Check if the extension is active by developer tools and verifying if you see "Course extension loaded!" in the console.
 <img width="521" height="428" alt="image" src="https://github.com/user-attachments/assets/8ac7ce15-1019-428c-98d0-3c4031ef25d5" />
 
-This project aims to ameriolarate that. 
+This project aims to address that.
 First you select your university of interest by clicking on the extension icon. 
 Then, you highlight some text and a tooltip will pop up showing past semester offerings of the class with its title and webpage.
 This currently only supports UIUC classes but I hope to expand it to more universities using course catalog APIs and allow contributors to modify the database.
+Currently, it uses a scraper that makes API calls, but it there has to be significant delays between calls to prevent being blocked from the catalog. It takes the XML or JSON and creates a massive JSON file
+keyed by course code, storing an array of objects of past semester course offerings.
+
+
+Features to be added:
+Add full support for Cornell as well, since there API is easy to work with.
+Allow the user to select from a submenu for the specific subject so that they only have to highlight the course number (eg. 391 instead of ECE 391). 
+Create a prereq chain visualizer.
 Futhermore, I hope to add a second mode that scans and add course tooltips to all the matched courses on a page.
+Create a contributor page, so that users can manually import enter information for universities that do not have APIs.
+
 
 
