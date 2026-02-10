@@ -7,11 +7,20 @@ A frustrating experience when browsing is that it requires jumping across multip
 This project aims to address that.
 First you select your university of interest by clicking on the extension icon. You can select your university by dropdown or enter into the searchbox and matching universities will be filtered through.
 When your university has been selected, it will set the chrome.sync.storage's selectedUniversity key to your selected university. This allows the selected university (along with selectedSubject, subjectSelectionMode) to persist even after you close the popup across sessions. 
+
+
+
 <img width="461" height="759" alt="image" src="https://github.com/user-attachments/assets/4f5f1e63-5878-4069-b706-59655a9d5a3f" />
+
+
 
 It passes a message to the active tab via chrome.tabs api to content.js which loads the respective JSON to COURSE_DB.
 Then, then you highlight some text  a tooltip will pop up showing past semester offerings of the class with its title and webpage.
+
+
 ![Screenshot-2026-02-09-221129-_4_](https://github.com/user-attachments/assets/aba4544a-180a-4b90-87ff-cd31cd93963c)
+
+
 
 Course Number Selection Mode:
 When toggled on, you can select your subject of interest from the dropdown. Upon highlighting a course number, the course number will be appended to the prefix and key to the COURSE_DB as before.
@@ -75,6 +84,7 @@ Mutation Observer
 
 Change Logs:
 2/9/2026: Added static page text scan and course number selection mode.
+
 
 
 
