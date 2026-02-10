@@ -21,12 +21,41 @@ Currently, it uses a scraper that makes API calls, but it there has to be signif
 keyed by course code, storing an array of objects of past semester course offerings.
 
 
+How to Contribute:
+Inside ./scrapers, you can find example scraping scripts for UIUC and Cornell. UIUC was especially simple as the course catalog's had standardized URLs to XML files.
+./course_jsons contains JSONS in the following format where the key is the course code and the value is array of semester offerings.
+
+```
+{
+  "COURSE_CODE": [ // "aas100"
+    {
+      "title": "string", // "AAS 100: Intro Asian American Studies"
+      "year": number, // 2016
+      "semester": "string", // "spring"
+      "website": "string" // "https://courses.illinois.edu/schedule/2016/spring/AAS/100"
+    },
+      "title": "string", //"AAS 100: Intro Asian American Studies"
+      "year": number, //2026
+      "semester": "string", // "spring"
+      "website": "string" // "https://courses.illinois.edu/schedule/2026/spring/AAS/100"
+    },
+    ...
+  ]
+}
+
+```
+
+
 Features to be added:
 Add full support for Cornell as well, since there API is easy to work with.
 Allow the user to select from a submenu for the specific subject so that they only have to highlight the course number (eg. 391 instead of ECE 391). 
 Create a prereq chain visualizer.
 Futhermore, I hope to add a second mode that scans and add course tooltips to all the matched courses on a page.
 Create a contributor page, so that users can manually import enter information for universities that do not have APIs.
+
+
+Change Logs:
+2/9/2026
 
 
 
