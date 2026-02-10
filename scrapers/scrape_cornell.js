@@ -63,7 +63,7 @@ async function main() {
             const titleLong = cls.titleLong; // e.g., "Academic Support for MATH 1106"
             
             // Generate the key: "math 1006"
-            const courseKey = `${subjectCode} ${catalogNbr}`.toLowerCase();
+            const courseKey = `${subjectCode}${catalogNbr}`.toLowerCase();
             
             // Generate the title: "MATH 1006: Academic Support for MATH 1106"
             const formattedTitle = `${subjectCode} ${catalogNbr}: ${titleLong}`;

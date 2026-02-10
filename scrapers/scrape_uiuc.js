@@ -2,10 +2,25 @@ const fs = require('fs/promises');
 const path = require('path');
 const { XMLParser } = require('fast-xml-parser');
 
+const manual = false;
+
 // 1. Setup Arguments (Year and Semester)
+// manual entry
 const args = process.argv.slice(2);
 const year = args[0] || '2026';
 const semester = args[1] || 'spring';
+
+// auto entry
+const semesters = ['spring', 'summer', 'fall', 'winter'];
+const start = 2016;
+const end = 2026;
+
+
+
+const years = [];
+for (let i = start; i <= end; i++) {
+    years.push(i);
+}
 
 const BASE_URL = "https://courses.illinois.edu/cisapp/explorer/schedule";
 
@@ -27,38 +42,28 @@ async function fetchXML(url) {
     } catch (error) {
         console.error(`Failed to fetch ${url}:`, error.message);
         return null;
+    
     }
 }
 
-async function scrape() {
-    console.log(`Starting scrape for ${semester} ${year}...`);
 
-    // Fetch the list of subjects (e.g., CS, ECE)
+
+
+// Add 'masterData' as a parameter
+async function scrape(year, semester, masterData) {
+    console.log(`Scraping ${semester} ${year}...`);
+
     const semesterUrl = `${BASE_URL}/${year}/${semester}.xml`;
-    console.log(`DEBUG: Target URL is ${semesterUrl}`); 
     const rootData = await fetchXML(semesterUrl);
-    console.log("DEBUG: Data received:", rootData ? "YES" : "NO");
 
-    if (!rootData || !rootData.term || !rootData.term.subjects) {
-        console.error("Could not find subject list. Check year/semester inputs.");
-        return;
-    }
+    if (!rootData || !rootData.term || !rootData.term.subjects) return;
 
-    // Handle case where there is only one subject (parser returns object) vs multiple (array)
     let subjects = rootData.term.subjects.subject;
     if (!Array.isArray(subjects)) subjects = [subjects];
 
-    console.log(`Found ${subjects.length} subjects.`);
-    
-    const coursesData = {};
-
-    // Loop through every subject
     for (const sub of subjects) {
         const subjectId = sub["@_id"];
-        const subjectHref = sub["@_href"]; // The API link to get courses
-
-        // console.log(`Processing ${subjectId}...`); // Verbose logging
-
+        const subjectHref = sub["@_href"];
         const subjectData = await fetchXML(subjectHref);
         
         if (subjectData && subjectData.subject && subjectData.subject.courses) {
@@ -66,40 +71,51 @@ async function scrape() {
             if (!Array.isArray(courses)) courses = [courses];
 
             courses.forEach(course => {
-                const courseNumber = course["@_id"]; // e.g., "342"
-                const courseTitle = course["#text"] || "No Title";
-                
-                // Key: "ece 342"
-                const key = `${subjectId} ${courseNumber}`.toLowerCase();
-                
-                // Title: "ECE 342: Electronic Circuits"
-                const fullTitle = `${subjectId} ${courseNumber}: ${courseTitle}`;
+                const courseNumber = course["@_id"];
+                const key = `${subjectId}${courseNumber}`.toLowerCase().replace(/\s+/g, ''); // e.g. "ece408"
 
-                // Website: https://courses.illinois.edu/schedule/2026/spring/CS/101
-                const webUrl = `https://courses.illinois.edu/schedule/${year}/${semester}/${subjectId}/${courseNumber}`;
-
-                coursesData[key] = {
-                    title: fullTitle,
-                    description: fullTitle, // Using title as desc per your request
-                    website: webUrl
+                // Create the entry
+                const entry = {
+                    title: `${subjectId} ${courseNumber}: ${course["#text"]}`,
+                    year: year,
+                    semester: semester,
+                    website: `https://courses.illinois.edu/schedule/${year}/${semester}/${subjectId}/${courseNumber}`
                 };
+
+                // Add to the master object (using the Array-of-Semesters approach)
+                if (!masterData[key]) {
+                    masterData[key] = [];
+                }
+                masterData[key].push(entry);
             });
         }
-
-        // Be polite to the API
-        await sleep(50); 
+        await sleep(1000);
     }
-
-    // Sort keys alphabetically
-    const sortedData = Object.keys(coursesData).sort().reduce((obj, key) => {
-        obj[key] = coursesData[key];
-        return obj;
-    }, {});
-
-    const filename = `courses_${year}_${semester}.json`;
-    await fs.writeFile(filename, JSON.stringify(sortedData, null, 2));
     
-    console.log(`Success! Saved ${Object.keys(sortedData).length} courses to ${filename}`);
 }
 
-scrape();
+async function main() {
+    const allCourses = {};
+
+    if (manual) {
+        await scrape(year, semester, allCourses);
+    } else {
+        // auto - loop all
+        let i = 0
+        for (const y of years) {
+            for (const s of semesters) {
+                if (i % 5) {
+                    await sleep(2000);
+                }
+                await scrape(y, s, allCourses);
+                i += 1;
+            }
+        }
+    }
+    console.log("Finalizing giant JSON file...");
+    const filename = `uiuc_master_course_list.json`;
+    await fs.writeFile(filename, JSON.stringify(allCourses, null, 2));
+    console.log(`Success! All years saved to ${filename}`);
+}
+
+main();
